@@ -1,66 +1,89 @@
-﻿using ConsoleStoreCRUD;
+﻿using ConsoleStoreCRUD.Controllers;
+using ConsoleStoreCRUD.Models;
+using ConsoleStoreCRUD.Services;
 
-Product product1 = new Product() { Id = 1, Name = "T-shirt", Price = 1999.99 };
-Product product2 = new Product() { Id = 2, Name = "Hoodie", Price = 5000.00 };
-Product product3 = new Product() { Id = 3, Name = "Coat", Price = 10000.50 };
+var store = new StoreServiceJSON("Store.json");
+IStoreController controller = new StoreControllerJSON(store);
 
-StoreService store = new StoreService("Store.json");
 
-// Очищаю файл
-store.DeleteALlData();
-
-// Добовляю товары по одному
-store.AddProduct(product1);
-store.AddProduct(product2);
-store.AddProduct(product3);
-
-// Получаю все товары в виде списка, после чего перебираю список и вывожу в консоль
-var getProducts = store.GetAllProducts();
-
-foreach (var product in getProducts)
+// Цикл для обработки введеных команд.
+string? commandTyped = "";
+while (commandTyped?.ToLower() != "exit")
 {
-    Console.WriteLine(product.Id);
-    Console.WriteLine(product.Name);
-    Console.WriteLine(product.Price);
-    Console.WriteLine(product.Description);
+    Console.Write("Введите одну из команд - [Add, GetAll, Get, Update, Delete, Exit]: ");
+    commandTyped = Console.ReadLine();
+    switch (commandTyped?.ToLower())
+    {
+        case "add":
+            var productDataAdd = ReadProductData();
+            if (productDataAdd != null)
+            {
+                controller.Add(productDataAdd);
+            }
+            break;
+        case "getall":
+            controller.GetAll();
+            break;
+        case "get":
+            controller.Get(ReadProductId());
+            break;
+        case "update":
+            var productDataUpdate = ReadProductData();
+            if (productDataUpdate != null)
+            {
+                controller.Update(productDataUpdate);
+            }
+            break;
+        case "delete":
+            controller.Delete(ReadProductId());
+            break;
+    }
 }
 
-Console.WriteLine("---------------------------------------");
-
-// Получаю конкретный товар по Id и вывожу его данные в консоль
-var getProductById  = store.GetProductById(1);
-
-Console.WriteLine(getProductById?.Id);
-Console.WriteLine(getProductById?.Name);
-Console.WriteLine(getProductById?.Price);
-Console.WriteLine(getProductById?.Description);
-
-Console.WriteLine("---------------------------------------");
-
-// Данные для обновления
-Product productUpdate = new Product() { Id = 2, Name = "Hoodie", Price = 5000.00 , Description = "Good Hoodie"};
-
-// Обновляю товар по Id, после чего получаю этот товар и вывожу его данные в консоль
-store.UpdateProduct(2, productUpdate);
-
-var getProductById2 = store.GetProductById(2);
-
-Console.WriteLine(getProductById2?.Id);
-Console.WriteLine(getProductById2?.Name);
-Console.WriteLine(getProductById2?.Price);
-Console.WriteLine(getProductById2?.Description);
-
-Console.WriteLine("---------------------------------------");
-
-// Удаляю товар, после чего получаю список всех товаров и вывожу их на консоль
-store.DeleteProduct(3);
-
-var getProducts2 = store.GetAllProducts();
-
-foreach (var product in getProducts2)
+int ReadProductId()
 {
-    Console.WriteLine(product.Id);
-    Console.WriteLine(product.Name);
-    Console.WriteLine(product.Price);
-    Console.WriteLine(product.Description);
+    Console.Write("Введите Id товара: ");
+    if (!Int32.TryParse(Console.ReadLine(), out var id))
+    {
+        Console.WriteLine("Не правильный формат Id!");
+    }
+    return id;
+}
+
+Product? ReadProductData()
+{
+    var productData = new Product();
+
+    productData.Id = ReadProductId();
+    if (!productData.IsIdValid())
+    {
+        Console.WriteLine("Id должен быть больше 0");
+        return null;
+    }
+
+    
+    Console.Write("Введите Name: ");
+    productData.Name = Console.ReadLine() ?? "";
+    if (!productData.IsNameValid())
+    {
+        Console.WriteLine("Name обязательный параметр!");
+        return null;
+    }
+
+    Console.Write("Введите Price: ");
+    if(!Double.TryParse(Console.ReadLine(), out var price))
+    {
+        Console.WriteLine("Price должен быть в формате double!");
+        return null;
+    }
+    productData.Price = price;
+    if (!productData.IsPriceValid())
+    {
+        Console.WriteLine("Price должен быть больше нуля!");
+    }
+
+    Console.Write("Введите Description: ");
+    productData.Description = Console.ReadLine() ?? "";
+
+    return productData;
 }

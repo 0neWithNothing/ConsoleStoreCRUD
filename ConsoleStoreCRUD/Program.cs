@@ -35,23 +35,31 @@ while (commandTyped?.ToLower() != "exit")
 int ReadProductId()
 {
     Console.Write("Введите Id товара: ");
-    Int32.TryParse(Console.ReadLine(), out var id);
-    Console.WriteLine($"Id- {id}");
+    if (!Int32.TryParse(Console.ReadLine(), out var id))
+    {
+        Console.WriteLine("Не правильный формат Id!");
+    }
     return id;
 }
 
 Product ReadProductData()
 {
     var productData = new Product();
-    Console.Write("Введите Id: ");
-    Int32.TryParse(Console.ReadLine(), out var id);
-    productData.Id = id;
+
+    productData.Id = ReadProductId();
+
     Console.Write("Введите Name: ");
     productData.Name = Console.ReadLine() ?? "";
+
     Console.Write("Введите Price: ");
-    Double.TryParse(Console.ReadLine(), out var price);
+    if(!Double.TryParse(Console.ReadLine(), out var price))
+    {
+        Console.WriteLine("Не правильный формат Price!");
+    }
     productData.Price = price;
+
     Console.Write("Введите Description: ");
     productData.Description = Console.ReadLine() ?? "";
+
     return productData;
 }

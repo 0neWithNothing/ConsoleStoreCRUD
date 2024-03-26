@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using ConsoleStoreCRUD.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ConsoleStoreCRUD.Services
 {
@@ -31,6 +32,10 @@ namespace ConsoleStoreCRUD.Services
             if (File.Exists(_fileName))
             {
                 productList.Data = GetAllProducts();
+            }
+            else
+            {
+                productList.Data = new List<Product>();
             }
             productList.Data.Add(productData);
             string jsonString = JsonSerializer.Serialize(productList);

@@ -12,27 +12,22 @@ namespace ConsoleStoreCRUD.Controllers
             _service = service;
         }
 
-        /// <summary>
-        /// Обработка запроса на добавление товара и вывод на консоль ответа.
-        /// </summary>
-        /// <param name="productData"></param>
+        /// <inheritdoc />
         public void Add(Product productData)
         {
             var productInFile = _service.GetProductById(productData.Id);
             if (productInFile != null)
             {
                 Console.WriteLine($"Товар с Id={productData.Id} уже существует!");
-            } else
+            }
+            else
             {
                 _service.AddProduct(productData);
                 Console.WriteLine($"Товар с Id={productData.Id} успешно добавлен");
             }
         }
 
-        /// <summary>
-        /// Обработка запроса на удаление товара по Id и вывод на консоль ответа.
-        /// </summary>
-        /// <param name="id"></param>
+        /// <inheritdoc />
         public void Delete(int id)
         {
             var product = _service.GetProductById(id);
@@ -47,29 +42,22 @@ namespace ConsoleStoreCRUD.Controllers
             }
         }
 
-        /// <summary>
-        /// Обработка запроса на получение товара по Id и вывод на консоль ответа.
-        /// </summary>
-        /// <param name="id"></param>
+        /// <inheritdoc />
         public void Get(int id)
         {
             var product = _service.GetProductById(id);
-            if (product != null)
-            {
-                Console.WriteLine($"Id: {product.Id}");
-                Console.WriteLine($"Name: {product.Name}");
-                Console.WriteLine($"Price: {product.Price}");
-                Console.WriteLine($"Description: {product.Description}");
-            }
-            else
+            if (product == null)
             {
                 Console.WriteLine($"Товар с Id={id} не существует!");
+                return ;
             }
+            Console.WriteLine($"Id: {product.Id}");
+            Console.WriteLine($"Name: {product.Name}");
+            Console.WriteLine($"Price: {product.Price}");
+            Console.WriteLine($"Description: {product.Description}");
         }
 
-        /// <summary>
-        /// Обработка запроса на получение списка всех продуктов и вывод на консоль ответа.
-        /// </summary>
+        /// <inheritdoc />
         public void GetAll()
         {
             var products = _service.GetAllProducts();
@@ -83,22 +71,17 @@ namespace ConsoleStoreCRUD.Controllers
             }
         }
 
-        /// <summary>
-        /// Обработка запроса на обновление товара и вывод на консоль ответа.
-        /// </summary>
-        /// <param name="productData"></param>
+        /// <inheritdoc />
         public void Update(Product productData)
         {
             var productInFile = _service.GetProductById(productData.Id);
-            if (productInFile != null)
-            {
-                _service.UpdateProduct(productData);
-                Console.WriteLine($"Товар с Id={productData.Id} успешно обновлен!");
-            }
-            else
+            if (productInFile == null)
             {
                 Console.WriteLine($"Товар с Id={productData.Id} не существует!");
+                return ;
             }
+            _service.UpdateProduct(productData);
+            Console.WriteLine($"Товар с Id={productData.Id} успешно обновлен!");
         }
     }
 }

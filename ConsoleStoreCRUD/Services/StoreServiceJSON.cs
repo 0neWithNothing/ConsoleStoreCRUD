@@ -10,12 +10,21 @@ namespace ConsoleStoreCRUD.Services
         public StoreServiceJSON(string fileName)
         {
             _fileName = fileName;
+
+            if (!File.Exists(fileName))
+            {
+                var product1 = new Product() { Id = 1, Name = "T-shirt", Price = 1999.99 };
+                var product2 = new Product() { Id = 2, Name = "Hoodie", Price = 5000.00 };
+                var product3 = new Product() { Id = 3, Name = "Coat", Price = 10000.50 };
+
+                // Добовляю заранье подготовленные данные, что-бы было с чем работать.
+                AddProduct(product1);
+                AddProduct(product2);
+                AddProduct(product3);
+            }
         }
 
-        /// <summary>
-        /// Добавление нового товара.
-        /// </summary>
-        /// <param name="productData"></param>
+        /// <inheritdoc />
         public void AddProduct(Product productData)
         {
             var productList = new ProductObject();
@@ -28,32 +37,22 @@ namespace ConsoleStoreCRUD.Services
             File.WriteAllText(_fileName, jsonString);
         }
 
-        /// <summary>
-        /// Получение списка всех товаров.
-        /// </summary>
-        /// <returns>Список объектов товаров</returns>
+        /// <inheritdoc />
         public List<Product> GetAllProducts()
         {
-            var jsonString = File.ReadAllText(_fileName);
+            string jsonString = File.ReadAllText(_fileName);
             var productsList = JsonSerializer.Deserialize<ProductObject>(jsonString) ?? new ProductObject();
             return productsList.Data;
         }
 
-        /// <summary>
-        /// Получение конкретного товара по Id.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns>Объект товара или null</returns>
+        /// <inheritdoc />
         public Product? GetProductById(int id)
         {
             var product = GetAllProducts().FirstOrDefault(p => p.Id == id);
             return product;
         }
 
-        /// <summary>
-        /// Удаление конкретного товара по Id.
-        /// </summary>
-        /// <param name="id"></param>
+        /// <inheritdoc />
         public void DeleteProduct(int id)
         {
             var productList = new ProductObject();
@@ -67,10 +66,7 @@ namespace ConsoleStoreCRUD.Services
             }
         }
 
-        /// <summary>
-        /// Обновление товара, если передан сущетвующий Id.
-        /// </summary>
-        /// <param name="productData"></param>
+        /// <inheritdoc />
         public void UpdateProduct(Product productData)
         {
             var productList = new ProductObject();
@@ -83,17 +79,6 @@ namespace ConsoleStoreCRUD.Services
                 product.Price = productData.Price;
                 string jsonString = JsonSerializer.Serialize(productList);
                 File.WriteAllText(_fileName, jsonString);
-            }
-        }
-
-        /// <summary>
-        /// Полная очистка хранилища (Файла).
-        /// </summary>
-        public void DeleteALlData()
-        {
-            if (File.Exists(_fileName))
-            {
-                File.Delete(_fileName);
             }
         }
     }

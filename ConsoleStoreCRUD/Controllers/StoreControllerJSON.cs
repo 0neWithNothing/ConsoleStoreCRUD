@@ -22,13 +22,8 @@ namespace ConsoleStoreCRUD.Controllers
             }
             else
             {
-                if (IsProductDataValid(productData))
-                {
-                    _service.AddProduct(productData);
-                    Console.WriteLine($"Товар с Id={productData.Id} успешно добавлен");
-                    return ;
-                }
-                Console.WriteLine($"Не валидные данные! Id и Price должны быть больше 0. Name обязательный параметр.");
+                _service.AddProduct(productData);
+                Console.WriteLine($"Товар с Id={productData.Id} успешно добавлен");
             }
         }
 
@@ -85,24 +80,8 @@ namespace ConsoleStoreCRUD.Controllers
                 Console.WriteLine($"Товар с Id={productData.Id} не существует!");
                 return ;
             }
-            if (IsProductDataValid(productData))
-            {
-                _service.UpdateProduct(productData);
-                Console.WriteLine($"Товар с Id={productData.Id} успешно обновлен!");
-                return ;
-            }
-            Console.WriteLine($"Не валидные данные! Id и Price должны быть больше 0. Name обязательный параметр.");
-        }
-
-        public bool IsProductDataValid(Product productData)
-        {
-            if (productData.Id <= 0) return false;
-
-            if (productData.Price <= 0) return false;
-
-            if (productData.Name.Length == 0) return false;
-
-            return true;
+            _service.UpdateProduct(productData);
+            Console.WriteLine($"Товар с Id={productData.Id} успешно обновлен!");
         }
     }
 }

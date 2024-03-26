@@ -15,7 +15,11 @@ while (commandTyped?.ToLower() != "exit")
     switch (commandTyped?.ToLower())
     {
         case "add":
-            controller.Add(ReadProductData());
+            var productDataAdd = ReadProductData();
+            if (productDataAdd != null)
+            {
+                controller.Add(productDataAdd);
+            }
             break;
         case "getall":
             controller.GetAll();
@@ -24,7 +28,11 @@ while (commandTyped?.ToLower() != "exit")
             controller.Get(ReadProductId());
             break;
         case "update":
-            controller.Update(ReadProductData());
+            var productDataUpdate = ReadProductData();
+            if (productDataUpdate != null)
+            {
+                controller.Update(productDataUpdate);
+            }
             break;
         case "delete":
             controller.Delete(ReadProductId());
@@ -42,21 +50,37 @@ int ReadProductId()
     return id;
 }
 
-Product ReadProductData()
+Product? ReadProductData()
 {
     var productData = new Product();
 
     productData.Id = ReadProductId();
+    if (!productData.IsIdValid())
+    {
+        Console.WriteLine("Id должен быть больше 0");
+        return null;
+    }
 
+    
     Console.Write("Введите Name: ");
     productData.Name = Console.ReadLine() ?? "";
+    if (!productData.IsNameValid())
+    {
+        Console.WriteLine("Name обязательный параметр!");
+        return null;
+    }
 
     Console.Write("Введите Price: ");
     if(!Double.TryParse(Console.ReadLine(), out var price))
     {
-        Console.WriteLine("Не правильный формат Price!");
+        Console.WriteLine("Price должен быть в формате double!");
+        return null;
     }
     productData.Price = price;
+    if (!productData.IsPriceValid())
+    {
+        Console.WriteLine("Price должен быть больше нуля!");
+    }
 
     Console.Write("Введите Description: ");
     productData.Description = Console.ReadLine() ?? "";

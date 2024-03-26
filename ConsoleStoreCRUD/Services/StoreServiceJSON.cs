@@ -1,16 +1,21 @@
 ﻿using System.Text.Json;
+using ConsoleStoreCRUD.Models;
 
-namespace ConsoleStoreCRUD
+namespace ConsoleStoreCRUD.Services
 {
-    public class StoreService
+    public class StoreServiceJSON : IStoreService
     {
-        readonly string _fileName;
+        private readonly string _fileName;
 
-        public StoreService(string fileName)
+        public StoreServiceJSON(string fileName)
         {
             _fileName = fileName;
         }
 
+        /// <summary>
+        /// Добавление нового товара.
+        /// </summary>
+        /// <param name="productData"></param>
         public void AddProduct(Product productData)
         {
             var productList = new ProductObject();
@@ -23,6 +28,10 @@ namespace ConsoleStoreCRUD
             File.WriteAllText(_fileName, jsonString);
         }
 
+        /// <summary>
+        /// Получение списка всех товаров.
+        /// </summary>
+        /// <returns>Список объектов товаров</returns>
         public List<Product> GetAllProducts()
         {
             var jsonString = File.ReadAllText(_fileName);
@@ -30,12 +39,21 @@ namespace ConsoleStoreCRUD
             return productsList.Data;
         }
 
+        /// <summary>
+        /// Получение конкретного товара по Id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Объект товара или null</returns>
         public Product? GetProductById(int id)
         {
             var product = GetAllProducts().FirstOrDefault(p => p.Id == id);
             return product;
         }
 
+        /// <summary>
+        /// Удаление конкретного товара по Id.
+        /// </summary>
+        /// <param name="id"></param>
         public void DeleteProduct(int id)
         {
             var productList = new ProductObject();
@@ -49,12 +67,16 @@ namespace ConsoleStoreCRUD
             }
         }
 
-        public void UpdateProduct(int id, Product productData)
+        /// <summary>
+        /// Обновление товара, если передан сущетвующий Id.
+        /// </summary>
+        /// <param name="productData"></param>
+        public void UpdateProduct(Product productData)
         {
             var productList = new ProductObject();
             productList.Data = GetAllProducts();
-            var product = productList.Data.FirstOrDefault(p => p.Id == id);
-            if (product != null && product.Id == productData.Id)
+            var product = productList.Data.FirstOrDefault(p => p.Id == productData.Id);
+            if (product != null)
             {
                 product.Name = productData.Name;
                 product.Description = productData.Description;
@@ -64,6 +86,9 @@ namespace ConsoleStoreCRUD
             }
         }
 
+        /// <summary>
+        /// Полная очистка хранилища (Файла).
+        /// </summary>
         public void DeleteALlData()
         {
             if (File.Exists(_fileName))
